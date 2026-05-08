@@ -1,0 +1,69 @@
+AI Engineering Agent - Baby Steps for Testing
+===============================================
+
+This document outlines the step-by-step process to test the AI Engineering Agent locally and in production.
+
+---
+
+### Step 1: Verify Your Setup
+- Ensure your .env file in C:\Rohit\Project\GithubDoc has the correct OPENAI_API_KEY and GITHUB_TOKEN.
+- Confirm that dependencies are installed (run 'pip install -r requirements.txt' if needed).
+- Open a terminal (PowerShell) and navigate to C:\Rohit\Project\GithubDoc.
+
+---
+
+### Step 2: Local Testing with Mock Data (No Real API Calls)
+- Set the mock environment variable:
+  set OPENAI_MOCK=true
+- Run the agent with the sample event:
+  python -m agent.runner --event-file sample-event.json --event-name pull_request
+- This simulates a pull request event and generates analysis without calling OpenAI.
+
+---
+
+### Step 3: Check the Results
+- Look for log messages in the terminal output (e.g., "Analysis complete").
+- Check the 'data/' folder for a new JSON file (e.g., analysis_example_repo_pull_request_YYYYMMDD_HHMMSS.json).
+- Open the JSON file to view the structured report, including change summary, impact analysis, and reuse recommendations.
+
+---
+
+### Step 4: Test with Real OpenAI API (Optional, if Quota is Active)
+- Remove the mock variable:
+  set OPENAI_MOCK=
+- Run the same command:
+  python -m agent.runner --event-file sample-event.json --event-name pull_request
+- This will call OpenAI for real analysis. Monitor for any quota errors.
+
+---
+
+### Step 5: Deploy to GitHub Actions for Automatic Triggering
+- Go to your GitHub repository in a web browser.
+- Navigate to Settings > Secrets and variables > Actions.
+- Add two new repository secrets:
+  - Name: OPENAI_API_KEY, Value: Your OpenAI API key (starts with sk-)
+  - Name: GITHUB_TOKEN, Value: Your GitHub Personal Access Token
+- Commit and push your code to GitHub (ensure .github/workflows/ai-agent.yml is included).
+- Create a new pull request or push a commit to trigger the workflow.
+
+---
+
+### Step 6: Monitor GitHub Actions and Troubleshoot
+- In your GitHub repository, go to the Actions tab.
+- Find the latest workflow run for "AI Engineering Agent".
+- Click on it to view logs, especially the "Run AI Engineering Agent" step.
+- Check for PR comments automatically posted by the agent.
+- If errors occur:
+  - API quota issues: Check your OpenAI billing.
+  - Token permissions: Ensure GITHUB_TOKEN has repo access.
+  - Local issues: Activate virtual env with 'C:\Rohit\Project\GithubDoc\.venv\Scripts\activate'.
+
+---
+
+### Additional Notes
+- The agent processes git diffs, generates AI-powered reports, and suggests code reuse.
+- Output format includes sections like Change Summary, Impact Analysis, and Recommendations.
+- For production, the agent runs silently on every push/PR across repositories.
+- If you encounter issues, share the error logs for help.
+
+Happy testing! 🚀
